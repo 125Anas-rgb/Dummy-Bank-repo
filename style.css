@@ -438,6 +438,9 @@ h2 {
 
 .blackTheme {
   background-color: black;
+}
+
+.blackTheme p {
   color: white;
 }
 

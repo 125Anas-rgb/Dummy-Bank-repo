@@ -471,5 +471,6 @@ labelBalance.addEventListener('click', function () {
 function changeTheme() {
   document.querySelector('body').classList.toggle('blackTheme');
   document.querySelectorAll('p').classList.toggle('blackTheme');
+  containerMovements.style.backgroundColor = 'rgba(255, 255, 255, 0.4);';
 }
 logo.addEventListener('click', changeTheme);
