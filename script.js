@@ -474,3 +474,10 @@ function changeTheme() {
   containerMovements.style.backgroundColor = 'rgba(255, 255, 255, 0.4);';
 }
 logo.addEventListener('click', changeTheme);
+
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  checkMovements(currentAccount, !sorted);
+  sorted = !sorted;
+});
