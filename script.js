@@ -178,7 +178,7 @@ let logoutTimer = function () {
     time--;
   };
 
-  let time = 20;
+  let time = 120;
 
   tick();
 
@@ -296,26 +296,37 @@ btnSignup.addEventListener('click', () => {
 
 createAcc.addEventListener('click', function (e) {
   e.preventDefault();
-  signUp.classList.add('hidden');
-  nav.classList.remove('hidden');
+  const message = document.createElement('div');
 
-  function createAccount(name, pin) {
-    this.owner = name;
-    this.movements = [500, 500, 500];
-    this.interestRate = 1.2;
-    this.pin = Number(pin);
+  if (inputSignupName.value === '' && inputSignupPin.value === '') {
+    message.classList.add('msg');
+    message.innerHTML = '<p>Please fill the credentials</p>';
+    document.documentElement.prepend(message);
+    setTimeout(function () {
+      message.remove();
+    }, 5000);
+  } else {
+    signUp.classList.add('hidden');
+    nav.classList.remove('hidden');
+
+    function createAccount(name, pin) {
+      this.owner = name;
+      this.movements = [500, 500, 500];
+      this.interestRate = 1.2;
+      this.pin = Number(pin);
+    }
+
+    const newUser = new createAccount(
+      inputSignupName.value,
+      inputSignupPin.value,
+    );
+
+    accounts.push(newUser);
+    createUsername([newUser]);
+    console.log(accounts);
+
+    labelAcc.textContent = `Congrats Your User Name is ${newUser.userName}`;
   }
-
-  const newUser = new createAccount(
-    inputSignupName.value,
-    inputSignupPin.value,
-  );
-
-  accounts.push(newUser);
-  createUsername([newUser]);
-  console.log(accounts);
-
-  labelAcc.textContent = `Congrats Your User Name is ${newUser.userName}`;
 });
 
 btnLogin.addEventListener('click', function (e) {
@@ -460,5 +471,6 @@ labelBalance.addEventListener('click', function () {
 function changeTheme() {
   document.querySelector('body').classList.toggle('blackTheme');
   document.querySelectorAll('p').classList.toggle('blackTheme');
+  containerMovements.style.backgroundColor = 'rgba(255, 255, 255, 0.4);';
 }
 logo.addEventListener('click', changeTheme);

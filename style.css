@@ -21,7 +21,6 @@ body {
   color: #444;
   background-color: #f3f3f3;
   height: 100vh;
-  padding: 2rem;
   width: 100%;
   overflow: hidden;
 }
@@ -78,11 +77,13 @@ nav.active {
   transition: background-color 0.2s;
 }
 .dont {
+  position: fixed;
   font-size: larger;
-  transform: translate(45%, 1800%);
+  top: 60%;
+  left: 45%;
 }
 .sign-up {
-  position: relative;
+  position: fixed;
   max-width: 50rem;
   margin: 4rem auto;
   display: flex;
@@ -91,7 +92,7 @@ nav.active {
   gap: 1rem;
   border: none;
   top: 45%;
-  left: 22%;
+  left: 50%;
   transform: translate(-50%, -50%);
   z-index: 60;
   background-color: #fff;
@@ -216,6 +217,7 @@ nav {
 
 /* MAIN */
 .app {
+  padding: 5rem;
   position: relative;
   max-width: 100rem;
   margin: 4rem auto;
@@ -436,5 +438,26 @@ h2 {
 
 .blackTheme {
   background-color: black;
+}
+
+.blackTheme p {
   color: white;
+}
+
+.blackTheme input {
+  color: black;
+}
+
+.wel {
+  color: black;
+}
+
+.msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96.5%;
+  height: 50px;
+  background-color: rgb(255, 132, 132);
+  margin: 20px;
 }
