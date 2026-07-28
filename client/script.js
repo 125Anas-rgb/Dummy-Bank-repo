@@ -294,17 +294,33 @@ btnSignup.addEventListener('click', () => {
   btnSignup.classList.add('hidden');
 });
 
+const same = accounts.some(
+  ({ owner, pin }) =>
+    inputSignupName.value === owner && inputSignupPin.value === pin,
+);
+
+const popUp = function (msg) {
+  const message = document.createElement('div');
+  message.classList.add('msg');
+  message.innerHTML = msg;
+  document.documentElement.prepend(message);
+  setTimeout(function () {
+    message.remove();
+  }, 5000);
+};
+
 createAcc.addEventListener('click', function (e) {
   e.preventDefault();
-  const message = document.createElement('div');
 
-  if (inputSignupName.value === '' && inputSignupPin.value === '') {
-    message.classList.add('msg');
-    message.innerHTML = '<p>Please fill the credentials</p>';
-    document.documentElement.prepend(message);
-    setTimeout(function () {
-      message.remove();
-    }, 5000);
+  const same = accounts.some(
+    ({ owner, pin }) =>
+      inputSignupName.value === owner && +inputSignupPin.value === pin,
+  );
+  if (same) {
+    popUp('<p>Account already eists</p>');
+    (inputSignupName.value === inputSignupPin.value) === '';
+  } else if (inputSignupName.value === '' && inputSignupPin.value === '') {
+    popUp('<p>Please fill the credentials</p>');
   } else {
     signUp.classList.add('hidden');
     nav.classList.remove('hidden');
