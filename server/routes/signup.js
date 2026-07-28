@@ -11,6 +11,8 @@ const validateSignup = require("../middleware/validateSignup");
 
 const accounts = require("../data/accounts");
 
+let newId = 5;
+
 router.post("/", validateSignup, (req, res) => {
   //server recieves req.body as inputs from user
   const { owner, pin } = req.body;
@@ -22,8 +24,9 @@ router.post("/", validateSignup, (req, res) => {
       .map((name) => name[0])
       .join("");
 
+  //whenecer user sign ups it cretes new object of account
   const newAccount = {
-    id: accounts.length + 1,
+    id: newId++,
     owner,
     pin,
     username: createUsername(owner),
@@ -38,6 +41,7 @@ router.post("/", validateSignup, (req, res) => {
     locale: "en-QA",
   };
 
+  //add in main accounts array
   accounts.push(newAccount);
   console.log(accounts);
 

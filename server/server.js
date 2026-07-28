@@ -17,6 +17,7 @@ const loginRoute = require("./routes/login");
 const transferRoute = require("./routes/transfer");
 const loanRoute = require("./routes/loan");
 const closeAccRoute = require("./routes/closeAccount");
+const accountsRoute = require("./routes/accountOps");
 
 //This creates the main Express application.
 const app = express();
@@ -26,9 +27,11 @@ app.use(cors());
 //Start listening on port 3000
 app.listen(3000);
 
+//converts json back into object which becomes req.body
 app.use(express.json());
 
 //when url starts gets string api/anyPath (route)(API URL path), send the rest to this router variable
+app.use("/api/accounts", accountsRoute);
 app.use("/api/signup", signupRoute);
 app.use("/api/login", loginRoute);
 app.use("/api/transfer", transferRoute);
@@ -39,23 +42,33 @@ app.get("/api/message", (req, res) => {
   res.json({ message: "Hey yo Welcome to Bank server" });
 });
 
-app.post("/api/closeAcc", validateLogin, (req, res) => {
-  const { username, pin } = req.body;
-  const currentAccount = accounts.find(
-    (acc) => acc.username === username && acc.pin === pin,
-  );
-  //find index of current account
-  const index = accounts.findIndex(
-    (acc) => acc.username === currentAccount.username,
-  );
-  //remove account from accounts array by index
-  accounts.splice(index, 1);
-  console.log(accounts);
+// app.get("/api/accounts", (req, res) => {
+//   res.json(accounts);
+// });
 
-  res.status(200).json({
-    message: "Account close success",
-  });
-});
+// app.get("/api/accounts/:id", (req, res) => {
+//   const id = Number(req.params.id);
+
+//   const account = accounts.find((acc) => acc.id === id);
+
+//   res.status(200).json(account);
+// });
+
+// app.put("/api/accounts/:id", (req, res) => {
+//   const id = Number(req.params.id);
+
+//   const account = accounts.find((acc) => acc.id === id);
+
+//   if (typeof req.body.pin === "number") account.pin = req.body.pin;
+
+//   res.status(200).json(account);
+// });
+
+// app.put("/api/accounts/:id", (req, res) => {
+//   const id = Number(req.params.id);
+
+//   const account = accounts.find((acc) => acc.id === id);
+// });
 
 //For your Dummy Bank, the main ones you used:
 // 200 → Login, transfer, account operations successful.
