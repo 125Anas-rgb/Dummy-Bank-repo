@@ -1,5 +1,4 @@
 'use strict';
-
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // BANKIST APP
@@ -38,6 +37,7 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 const inputSignupName = document.querySelector('.signup__input--user');
 const inputSignupPin = document.querySelector('.signup__input--pin');
+const inputSignupEmail = document.querySelector('.signup__input--email');
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -222,7 +222,9 @@ createAcc.addEventListener('click', function (e) {
     },
 
     //converting into json(req.body in server)
+    //so it can travel thorugh HTTP
     body: JSON.stringify({
+      email: inputSignupEmail.value,
       owner: inputSignupName.value,
       pin: Number(inputSignupPin.value),
     }),
@@ -270,7 +272,7 @@ btnLogin.addEventListener('click', function (e) {
 
     //checks weather request was successful (done in validateLogin middleware)
     if (!res.ok) {
-      popUp(`<p>${currentAccount.error}</p>`);
+      popUp(`<p>${data.error}</p>`);
       return;
     }
 
@@ -322,7 +324,7 @@ btnTransfer.addEventListener('click', function (e) {
     },
 
     body: JSON.stringify({
-      sender: currentAccount.username,
+      senderUsername: currentAccount.username,
       receiveUsername: inputTransferTo.value,
       amount: Number(inputTransferAmount.value),
     }),
@@ -375,7 +377,7 @@ btnClose.addEventListener('click', function (e) {
     },
 
     body: JSON.stringify({
-      username: inputCloseUsername.value,
+      email: inputCloseUsername.value,
       pin: Number(inputClosePin.value),
     }),
   }).then(async res => {

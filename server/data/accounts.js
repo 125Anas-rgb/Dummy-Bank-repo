@@ -1,6 +1,10 @@
 // Data
+
+const prisma = require("../config/db");
+
 const account1 = {
   id: 1,
+  email: "jonas123@example.com",
   owner: "Jonas Schmedtmann",
   username: "js",
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
@@ -22,6 +26,7 @@ const account1 = {
 
 const account2 = {
   id: 2,
+  email: "jessica123@example.com",
   owner: "Jessica Davis",
   username: "jd",
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
@@ -43,6 +48,7 @@ const account2 = {
 
 const account3 = {
   id: 3,
+  email: "steven123@example.com",
   owner: "Steven Thomas Williams",
   username: "stw",
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
@@ -64,6 +70,7 @@ const account3 = {
 
 const account4 = {
   id: 4,
+  email: "sarah123@example.com",
   owner: "Sarah Smith",
   username: "ss",
   movements: [430, 1000, 700, 50, 90],
