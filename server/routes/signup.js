@@ -9,41 +9,61 @@ const router = express.Router();
 //getting middleware (defining path)
 const validateSignup = require("../middleware/validateSignup");
 
-const accounts = require("../data/accounts");
+// const accounts = require("../data/accounts");
+const prisma = require("../config/db");
 
-let newId = 5;
-
-router.post("/", validateSignup, (req, res) => {
+router.post("/", validateSignup, async (req, res) => {
   //server recieves req.body as inputs from user
-  const { owner, pin } = req.body;
+  const { email, owner, pin } = req.body;
 
   const createUsername = (owner) =>
     owner
       .toLowerCase()
       .split(" ")
       .map((name) => name[0])
-      .join("");
-
+      .join("") + Math.floor(100 + Math.random() * 900);
   //whenecer user sign ups it cretes new object of account
-  const newAccount = {
-    id: newId++,
-    owner,
-    pin,
-    username: createUsername(owner),
-    interestRate: 1,
-    movements: [200, 300, 500],
-    movementsDates: [
-      new Date().toISOString(),
-      new Date().toISOString(),
-      new Date().toISOString(),
-    ],
-    currency: "EUR",
-    locale: "en-QA",
-  };
+
+  const newAccount = await prisma.user.create({
+    data: {
+      email,
+      owner,
+      pin,
+      username: createUsername(owner),
+      interestRate: 1,
+      movements: [100, 200, 500],
+      movementsDates: [
+        new Date().toISOString(),
+        new Date().toISOString(),
+        new Date().toISOString(),
+      ],
+      currency: "EUR",
+      locale: "en-QA",
+    },
+  });
+
+  console.log(createUsername(newAccount.owner));
+
+  // const newAccount = {
+  //   id: newId++,
+  //   email,
+  //   owner,
+  //   pin,
+  //   username: createUsername(owner),
+  //   interestRate: 1,
+  //   movements: [200, 300, 500],
+  //   movementsDates: [
+  //     new Date().toISOString(),
+  //     new Date().toISOString(),
+  //     new Date().toISOString(),
+  //   ],
+  //   currency: "EUR",
+  //   locale: "en-QA",
+  // };
 
   //add in main accounts array
-  accounts.push(newAccount);
-  console.log(accounts);
+  const dbAccounts = await prisma.user.findMany();
+  console.log(dbAccounts);
 
   res.status(201).json(newAccount);
 });

@@ -6,18 +6,39 @@ const validateTransfer = require("../middleware/validateTransfer");
 
 const accounts = require("../data/accounts");
 
-router.post("/", validateTransfer, (req, res) => {
-  const { sender, receiveUsername, amount } = req.body;
+const prisma = require("../config/db");
+// const { push } = require("node:stream/iter");
 
-  const senderAcc = accounts.find((acc) => acc.username === sender);
-  const receiveAcc = accounts.find((acc) => acc.username === receiveUsername);
-  console.log(receiveAcc);
+router.post("/", validateTransfer, async (req, res) => {
+  const { senderUsername, receiveUsername, amount } = req.body;
 
-  senderAcc.movements.push(-amount);
-  receiveAcc.movements.push(amount);
+  const senderAcc = await prisma.user.update({
+    where: {
+      username: senderUsername,
+    },
+    data: {
+      movements: {
+        push: -amount,
+      },
+      movementsDates: {
+        push: new Date(),
+      },
+    },
+  });
 
-  senderAcc.movementsDates.push(new Date().toISOString());
-  receiveAcc.movementsDates.push(new Date().toISOString());
+  const receiveAcc = await prisma.user.update({
+    where: {
+      username: receiveUsername,
+    },
+    data: {
+      movements: {
+        push: amount,
+      },
+      movementsDates: {
+        push: new Date(),
+      },
+    },
+  });
 
   console.log(senderAcc.movements);
   console.log(senderAcc.movementsDates);

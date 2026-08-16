@@ -1,13 +1,22 @@
 const accounts = require("../data/accounts");
 
-const validateTransfer = (req, res, next) => {
+const prisma = require("../config/db");
+
+const validateTransfer = async (req, res, next) => {
   //getting from user inputs (in JSON format)
-  const { sender, receiveUsername, amount } = req.body;
+  const { senderUsername, receiveUsername, amount } = req.body;
 
   //performing opearions from accounts data
-  const senderAcc = accounts.find((acc) => acc.username === sender);
-  const receiveAcc = accounts.find((acc) => acc.username === receiveUsername);
-  console.log(receiveAcc);
+  const senderAcc = await prisma.user.findUnique({
+    where: {
+      username: senderUsername,
+    },
+  });
+  const recieverAcc = await prisma.user.findUnique({
+    where: {
+      username: receiveUsername,
+    },
+  });
 
   function calcDisplayBalance(acc) {
     //new object key
@@ -20,12 +29,12 @@ const validateTransfer = (req, res, next) => {
 
   if (
     amount <= 0 ||
-    !receiveAcc ||
+    !recieverAcc ||
     senderBalnce <= amount ||
-    receiveAcc?.username === senderAcc
+    recieverAcc?.username === senderAcc.username
   ) {
     res.status(400).json({
-      error: "account wrong",
+      error: "Wrong Account",
     });
   }
   next();
