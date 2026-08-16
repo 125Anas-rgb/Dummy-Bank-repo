@@ -3,5 +3,4 @@ thumbs.db
 node_modules
 /generated/prisma
 .env
-
-/generated/prisma
+.agents/
