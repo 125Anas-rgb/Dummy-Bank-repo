@@ -17,10 +17,15 @@ model User {
   email  String @unique
   owner  String 
   username String @unique
+  pin    String 
+  isVerified  Boolean  @default(false)
+  verificationToken  String? 
+  verificationTokenExpires  DateTime?
+  pinResetToken  String? 
+  pinResetExpires  DateTime?
   movements  Int[]
-  interestRate  Float @default(0.0)
-  pin    Int 
   movementsDates DateTime[]
+  interestRate  Float @default(0.0)
   currency  String
   locale    String
 

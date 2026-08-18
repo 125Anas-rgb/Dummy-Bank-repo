@@ -1,4 +1,6 @@
 //CommonJS import is require
+require("dotenv").config();
+
 const express = require("express");
 
 //allow requests from other origins
@@ -18,6 +20,11 @@ const transferRoute = require("./routes/transfer");
 const loanRoute = require("./routes/loan");
 const closeAccRoute = require("./routes/closeAccount");
 const accountsRoute = require("./routes/accountOps");
+const verifyEmailRoute = require("./routes/verifyEmail");
+const verifyDelete = require("./routes/verifyDelete");
+const forgetPin = require("./routes/forgetPin");
+const resetPin = require("./routes/resetPin");
+const auth = require("./middleware/auth");
 
 //This creates the main Express application.
 const app = express();
@@ -34,9 +41,13 @@ app.use(express.json());
 app.use("/api/accounts", accountsRoute);
 app.use("/api/signup", signupRoute);
 app.use("/api/login", loginRoute);
-app.use("/api/transfer", transferRoute);
-app.use("/api/loan", loanRoute);
-app.use("/api/closeAcc", closeAccRoute);
+app.use("/api/transfer", auth, transferRoute);
+app.use("/api/loan", auth, loanRoute);
+app.use("/api/closeAcc", auth, closeAccRoute);
+app.use("/api/verify-email", verifyEmailRoute);
+app.use("/api/forgetPin", forgetPin);
+app.use("/api/resetPin", resetPin);
+app.use("/api/verify-delete", verifyDelete);
 
 app.get("/api/message", (req, res) => {
   res.json({ message: "Hey yo Welcome to Bank server" });

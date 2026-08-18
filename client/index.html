@@ -33,6 +33,7 @@
           class="login__input login__input--pin"
         />
         <button class="login__btn">&rarr;</button>
+        <p class="forgot">Forgot your pin       <span><button class="forgot-btn">Click here</button></span></p>
       </form>
     </nav>
     <p class="dont">Don't have an Account ?</p>
@@ -56,6 +57,16 @@
 
         <button class="signup__btn">Create Account</button>
       </form>
+    </div>
+
+    <div class="forgot-page hidden">
+      <input type="email" placeholder="Enter email" class="newEmail">
+      <button class="newEmail-btn">Send Reset Link</button>
+    </div>
+
+    <div class="reset-page hidden">
+      <input type="text" placeholder="Enter New Pin" maxlength="4" class="newPin">
+      <button class="newPin-btn">Submit</button>
     </div>
 
     <main class="app">
@@ -129,7 +140,7 @@
       <div class="operation operation--close">
         <h2>Close account</h2>
         <form class="form form--close">
-          <input type="text" class="form__input form__input--user" />
+          <input type="email" class="form__input form__input--user" />
           <input
             type="password"
             maxlength="6"

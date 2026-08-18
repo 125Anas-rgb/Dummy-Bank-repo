@@ -6,7 +6,7 @@ const validateSignup = async (req, res, next) => {
   const { email, owner, pin } = req.body;
 
   if (!email || !owner || !pin) {
-    res.status(400).json({
+    return res.status(400).json({
       error: "Please fill all the fields",
     });
   }

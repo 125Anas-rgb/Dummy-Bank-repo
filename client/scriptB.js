@@ -1,4 +1,10 @@
 'use strict';
+
+//for reset pin...getting token and email from backend..
+
+//if it gets reset token then show reset page
+//means when user click the reset link..it will open html page...and at that time the script will get reset token so it directly opens reset page only
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // BANKIST APP
@@ -16,6 +22,7 @@ const signUp = document.querySelector('.sign-up');
 const labelAcc = document.querySelector('.dont');
 const logo = document.querySelector('.logo');
 const nav = document.querySelector('nav');
+const forgot = document.querySelector('.forgot');
 
 const containerApp = document.querySelector('.app');
 const containerMovements = document.querySelector('.movements');
@@ -27,6 +34,9 @@ const btnClose = document.querySelector('.form__btn--close');
 const btnSort = document.querySelector('.btn--sort');
 const btnSignup = document.querySelector('.create');
 const createAcc = document.querySelector('.signup__btn');
+const btnForgetPin = document.querySelector('.forgot-btn');
+const btnNewEmail = document.querySelector('.newEmail-btn');
+const btnNewPin = document.querySelector('.newPin-btn');
 
 const inputLoginUsername = document.querySelector('.login__input--user');
 const inputLoginPin = document.querySelector('.login__input--pin');
@@ -38,6 +48,27 @@ const inputClosePin = document.querySelector('.form__input--pin');
 const inputSignupName = document.querySelector('.signup__input--user');
 const inputSignupPin = document.querySelector('.signup__input--pin');
 const inputSignupEmail = document.querySelector('.signup__input--email');
+const inputforgotEmail = document.querySelector('.newEmail');
+const inputNewPin = document.querySelector('.newPin');
+
+// Read the values from the URL after the ?. includes only after ? (makes it easy to read)
+const params = new URLSearchParams(window.location.search);
+
+//extract the actual params from the link
+const resetToken = params.get('resetToken');
+const email = params.get('email');
+
+const resetPage = document.querySelector('.reset-page');
+const forgetPage = document.querySelector('.forgot-page');
+
+//if resetToken exists and is valid that was sent with the link then enable user to type new pin
+if (resetToken) {
+  resetPage.classList.remove('hidden');
+  nav.classList.add('hidden');
+  forgetPage.classList.add('hidden');
+  btnSignup.classList.add('hidden');
+  labelAcc.classList.add('hidden');
+}
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -244,11 +275,93 @@ createAcc.addEventListener('click', function (e) {
       }
 
       if (res.ok) {
+        popUp(`<p>A verification link has been sent to email</p>`);
         labelAcc.textContent = `Congrats Your User Name is ${data.username}`;
         signUp.classList.add('hidden');
         nav.classList.remove('hidden');
       }
     });
+});
+
+btnForgetPin.addEventListener('click', function (e) {
+  e.preventDefault();
+  forgetPage.classList.remove('hidden');
+  nav.classList.add('hidden');
+  createAcc.classList.add('hidden');
+  labelAcc.classList.add('hidden');
+  btnSignup.classList.add('hidden');
+});
+
+//clicks sent reset email button
+btnNewEmail.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  //fetches api of forget pin request (that will send reset link for pin in email )
+  fetch('http://localhost:3000/api/forgetPin', {
+    //
+    method: 'POST',
+    //tells that the body will be in json format
+    headers: {
+      'Content-Type': 'application/json',
+    },
+
+    //converts the types email into json format
+    body: JSON.stringify({
+      //will send this email to backend so that it verifies
+      email: inputforgotEmail.value,
+    }),
+  }).then(async res => {
+    //converts response into js object(data)
+    const data = await res.json();
+
+    //checks weather request was successful (done in forgetPin route)
+    if (!res.ok) {
+      popUp(`<p>${data.error}</p>`);
+      return;
+    } else {
+      popUp(`<p>${data.message}</p>`);
+
+      nav.classList.remove('hidden');
+      createAcc.classList.remove('hidden');
+      labelAcc.classList.remove('hidden');
+      btnSignup.classList.remove('hidden');
+      forgetPage.classList.add('hidden');
+    }
+  });
+});
+
+btnNewPin.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  fetch('http://localhost:3000/api/resetPin', {
+    //
+    method: 'POST',
+    //tells that the body will be in json format
+    headers: {
+      'Content-Type': 'application/json',
+    },
+
+    body: JSON.stringify({
+      //gets values from frontend and backend
+      token: resetToken,
+      newPin: inputNewPin.value,
+    }),
+  }).then(async res => {
+    //converts response into js object
+    const data = await res.json();
+
+    //checks weather request was successful (done in validateSignup middleware)
+    if (!res.ok) {
+      popUp(`<p>${data.error}</p>`);
+      return;
+    }
+
+    alert(data.message);
+
+    nav.classList.remove('hidden');
+    resetPage.classList.add('hidden');
+    btnSignup.classList.remove('hidden');
+  });
 });
 
 btnLogin.addEventListener('click', function (e) {
@@ -276,12 +389,13 @@ btnLogin.addEventListener('click', function (e) {
       return;
     }
 
-    currentAccount = data;
-
     if (res.ok) {
+      localStorage.setItem('token', data.token);
+      currentAccount = data.currentAccount;
       console.log(currentAccount);
       labelAcc.classList.add('hidden');
       btnSignup.classList.add('hidden');
+      forgot.classList.add('hidden');
 
       labelWelcome.textContent = `Welcome ${currentAccount.owner.split(' ')[0]}`;
       nav.classList.add('active');
@@ -316,11 +430,14 @@ btnLogin.addEventListener('click', function (e) {
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
 
+  const token = localStorage.getItem('token');
+
   fetch('http://localhost:3000/api/transfer', {
     method: 'POST',
     //tells that the body will be in json format
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
 
     body: JSON.stringify({
@@ -345,10 +462,13 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
+  const token = localStorage.getItem('token');
+
   fetch('http://localhost:3000/api/loan', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       username: currentAccount.username,
@@ -369,11 +489,14 @@ btnLoan.addEventListener('click', function (e) {
 btnClose.addEventListener('click', function (e) {
   e.preventDefault();
 
+  const token = localStorage.getItem('token');
+
   fetch('http://localhost:3000/api/closeAcc', {
     method: 'POST',
     //tells that the body will be in json format
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
 
     body: JSON.stringify({
@@ -382,12 +505,21 @@ btnClose.addEventListener('click', function (e) {
     }),
   }).then(async res => {
     const data = await res.json();
-    containerApp.style.opacity = '0';
-    nav.classList.remove('active');
-    popUp(`<p>Account Closed Successfully</p>`);
-    labelWelcome.textContent = 'Login to Get Started';
-    createAcc.classList.remove('hidden');
-    labelAcc.classList.remove('hidden');
+
+    if (!res.ok) {
+      popUp(`<p>${data.error}</p>`);
+      return;
+    }
+    if (res.ok) {
+      containerApp.style.opacity = '0';
+      nav.classList.remove('active');
+      popUp(`<p>Check your email to confirm closing your account</p>`);
+      labelWelcome.textContent = 'Login to Get Started';
+      createAcc.classList.remove('hidden');
+      labelAcc.classList.remove('hidden');
+      btnSignup.classList.remove('hidden');
+      forgot.classList.remove('hidden');
+    }
   });
 });
 

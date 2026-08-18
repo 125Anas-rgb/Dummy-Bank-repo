@@ -150,8 +150,71 @@ nav.active {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
+
+.forgot-page,
+.reset-page {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background-color: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  min-width: 350px;
+}
+
+.forgot {
+  position: fixed;
+  top: 98%;
+  left: 68%;
+}
+
+.forgot-btn,
+.newPin-btn {
+  border: none;
+  background-color: #39b385;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.8rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.newEmail-btn {
+  border: none;
+  background-color: #39b385;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.8rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.newEmail,
+.newPin {
+  padding: 0.5rem 2rem;
+  font-size: 1.6rem;
+  font-family: inherit;
+  text-align: center;
+  width: 30rem;
+  border-radius: 10rem;
+  margin-right: 1rem;
+  color: inherit;
+  border: 1px solid #fff;
+  transition: all 0.3s;
+}
+
 /* 
 nav {
   position: relative;

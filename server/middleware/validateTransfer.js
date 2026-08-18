@@ -33,7 +33,7 @@ const validateTransfer = async (req, res, next) => {
     senderBalnce <= amount ||
     recieverAcc?.username === senderAcc.username
   ) {
-    res.status(400).json({
+    return res.status(400).json({
       error: "Wrong Account",
     });
   }
