@@ -8,16 +8,31 @@ const accounts = require("../data/accounts");
 
 const prisma = require("../config/db");
 
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 router.post("/", validateLogin, async (req, res) => {
   //server recieves req.body as inputs from user
   const { username, pin } = req.body;
-  const currentAccount = await prisma.user.findFirst({
+
+  const currentAccount = await prisma.user.findUnique({
     where: {
       username,
-      pin,
     },
   });
-  res.status(200).json(currentAccount);
+
+  const token = jwt.sign(
+    {
+      userID: currentAccount.id,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "30m" },
+  );
+
+  return res.status(200).json({
+    currentAccount,
+    token,
+  });
   console.log(currentAccount);
 });
 

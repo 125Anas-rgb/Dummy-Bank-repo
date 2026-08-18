@@ -9,8 +9,14 @@ const router = express.Router();
 //getting middleware (defining path)
 const validateSignup = require("../middleware/validateSignup");
 
+const sendEmail = require("../utils/sendEmail");
+
 // const accounts = require("../data/accounts");
 const prisma = require("../config/db");
+
+const crypto = require("crypto");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 router.post("/", validateSignup, async (req, res) => {
   //server recieves req.body as inputs from user
@@ -24,48 +30,82 @@ router.post("/", validateSignup, async (req, res) => {
       .join("") + Math.floor(100 + Math.random() * 900);
   //whenecer user sign ups it cretes new object of account
 
+  let username = createUsername(owner);
+
+  let existingUsername = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  });
+
+  const hashPin = await bcrypt.hash(String(pin), 10);
+
+  //if username exists (generate again)
+  while (existingUsername) {
+    //create username again
+    username = createUsername(owner);
+
+    //check again
+    existingUsername = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+  }
+
+  const rawToken = crypto.randomBytes(32).toString("hex");
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(rawToken)
+    .digest("hex");
+
+  const verificationTokenExpires = new Date(Date.now() + 30 * 60 * 1000);
+
   const newAccount = await prisma.user.create({
     data: {
       email,
       owner,
-      pin,
-      username: createUsername(owner),
-      interestRate: 1,
+      pin: hashPin,
+      username,
+      verificationToken: hashedToken,
+      verificationTokenExpires,
       movements: [100, 200, 500],
       movementsDates: [
         new Date().toISOString(),
         new Date().toISOString(),
         new Date().toISOString(),
       ],
+      interestRate: 1,
       currency: "EUR",
       locale: "en-QA",
     },
   });
 
-  console.log(createUsername(newAccount.owner));
+  const verificationLink =
+    `http://localhost:3000/api/verify-email` +
+    `?token=${rawToken}&email=${encodeURIComponent(newAccount.email)}`;
 
-  // const newAccount = {
-  //   id: newId++,
-  //   email,
-  //   owner,
-  //   pin,
-  //   username: createUsername(owner),
-  //   interestRate: 1,
-  //   movements: [200, 300, 500],
-  //   movementsDates: [
-  //     new Date().toISOString(),
-  //     new Date().toISOString(),
-  //     new Date().toISOString(),
-  //   ],
-  //   currency: "EUR",
-  //   locale: "en-QA",
-  // };
+  await sendEmail({
+    to: newAccount.email,
+    subject: "Verify Email",
+    html: `<h1>Welcome To Dummy Bank Application</h1>
+    
+          <p>Please verify your email before completing registration</p>
+
+          <p>Click the link below to verify your email</p>
+          <p> <a href=${verificationLink}>
+             Verify Email </a> </p>
+
+          <p> This verification Link expires in 30 mints </p>`,
+  });
+
+  console.log(createUsername(newAccount.owner));
 
   //add in main accounts array
   const dbAccounts = await prisma.user.findMany();
   console.log(dbAccounts);
-
-  res.status(201).json(newAccount);
+  return res.status(201).json(newAccount);
 });
 
 module.exports = router;

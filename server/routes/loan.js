@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
     // currentAccount.movementsDates.push(new Date().toISOString());
   }
 
-  res.status(200).json(currentAccount);
+  return res.status(200).json(currentAccount);
 });
 
 module.exports = router;
